@@ -20,8 +20,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "employee")
 public class Employee {
 
     @Id
