@@ -36,8 +36,8 @@ public class Employee {
     @Column(length = 20, nullable = false)
     private String surname;
 
-    @OneToOne
-    @JoinColumn(name = "employee_role_id", nullable = true) // should change this to false
+    @OneToOne(cascade = javax.persistence.CascadeType.ALL)
+    @JoinColumn(name = "employee_role_id", nullable = true)
     private EmployeeRole role;
 
 //    @ManyToMany(fetch = FetchType.LAZY)

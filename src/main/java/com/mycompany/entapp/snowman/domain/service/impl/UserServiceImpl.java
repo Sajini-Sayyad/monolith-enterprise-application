@@ -19,7 +19,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUser(String userId) {
-        return userDao.findUser(Integer.parseInt(userId));
+        try {
+            return userDao.findUser(Integer.parseInt(userId));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     @Override
