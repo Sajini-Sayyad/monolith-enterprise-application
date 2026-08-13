@@ -24,7 +24,14 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
+@Transactional
 public class ClientServiceImpl implements ClientService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClientServiceImpl.class);
@@ -44,7 +51,11 @@ public class ClientServiceImpl implements ClientService {
 
         LOG.info("Retrieved client: {}", client);
 
-        if (client.getProjects().isEmpty()) {
+        if (client == null) {
+            return null;
+        }
+
+        if (client.getProjects() != null && client.getProjects().isEmpty()) {
             // call Client System REST endpoint to get its project data.
 
             ResponseEntity<String> response = makeRequest();
