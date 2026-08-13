@@ -125,7 +125,7 @@
     <hibernate.core.version>5.6.15.Final</hibernate.core.version>
     <hibernate.c3po.version>5.6.15.Final</hibernate.c3po.version>
     <bean.validation.version>2.0.0.Final</bean.validation.version>
-    <java.version>21</java.version>
+    <java.version>17</java.version>
     <mockito.version>5.11.0</mockito.version>
     <hibernate.entitymanager.version>5.6.15.Final</hibernate.entitymanager.version>
     <derby.version>10.11.1.1</derby.version>

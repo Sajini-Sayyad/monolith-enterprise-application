@@ -31,6 +31,9 @@ public class ProjectRestEndpoint {
     @RequestMapping("/{projectId}")
     public ResponseEntity<ProjectResource> getProject(@PathVariable Integer projectId) {
         Project project = projectService.getProject(projectId);
+        if (project == null) {
+            return ResponseEntity.notFound().build();
+        }
         ProjectResource projectResource = ProjectResourceMapper.mapToProjectResource(project);
         return ResponseEntity.ok(projectResource);
     }

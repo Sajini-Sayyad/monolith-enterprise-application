@@ -28,6 +28,9 @@ public class ClientRestEndpoint {
     @RequestMapping(value = "/{clientId}", method = RequestMethod.GET)
     public ResponseEntity<ClientResource> getClientInfo(@PathVariable("clientId") Integer clientId) {
         Client client = clientService.getClient(clientId);
+        if (client == null) {
+            return ResponseEntity.notFound().build();
+        }
         ClientResource clientResource = ClientResourceMapper.mapToClientResource(client);
         return ResponseEntity.ok(clientResource);
     }

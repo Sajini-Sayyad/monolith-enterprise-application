@@ -24,6 +24,9 @@ public final class UserResourceMapper {
     }
 
     public static UserResource mapUserToUserResource(User user) {
+        if (user == null) {
+            return null;
+        }
         UserResource userResource = new UserResource();
         userResource.setUserId(user.getUserId());
         userResource.setUsername(user.getUsername());

@@ -29,6 +29,9 @@ public final class ProjectResourceMapper {
     }
 
     public static ProjectResource mapToProjectResource(Project project) {
+        if (project == null) {
+            return null;
+        }
         ProjectResource projectResource = new ProjectResource();
         projectResource.setProjectId(project.getId());
         projectResource.setTitle(project.getProjectTitle());

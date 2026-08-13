@@ -15,11 +15,16 @@ public final class EmployeeResourceMapper {
     }
 
     public static EmployeeResource mapEmployeeToEmployeeResource(Employee employee) {
+        if (employee == null) {
+            return null;
+        }
         EmployeeResource employeeResource = new EmployeeResource();
         employeeResource.setEmployeeId(employee.getId());
         employeeResource.setFirstName(employee.getFirstname());
         employeeResource.setSecondName(employee.getSurname());
-        employeeResource.setRole(employee.getRole().getRole());
+        if (employee.getRole() != null) {
+            employeeResource.setRole(employee.getRole().getRole());
+        }
         return employeeResource;
     }
 

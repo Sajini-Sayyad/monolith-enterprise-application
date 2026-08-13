@@ -28,6 +28,9 @@ public class EmployeeRestEndpoint {
     @RequestMapping(value = "/{employeeId}", method = RequestMethod.GET)
     public ResponseEntity<EmployeeResource> getEmployee(@PathVariable Integer employeeId) {
         Employee employee = employeeService.getEmployee(employeeId);
+        if (employee == null) {
+            return ResponseEntity.notFound().build();
+        }
         EmployeeResource employeeResource = EmployeeResourceMapper.mapEmployeeToEmployeeResource(employee);
         return ResponseEntity.ok(employeeResource);
     }
