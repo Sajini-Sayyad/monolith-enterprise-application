@@ -39,14 +39,22 @@ public class ApplicationInfoDaoImpl extends AbstractJDBCDao implements Applicati
         try {
             setupDBDriver();
             connection = getConnection();
-            stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(SELECT_FROM_APP_INFO_QUERY);
+            if (connection != null) {
+                stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(SELECT_FROM_APP_INFO_QUERY);
 
-            while(rs.next()) {
-                AppInfo appInfo = new AppInfo();
-                appInfo.setId(rs.getInt("id"));
-                appInfo.setVersion(rs.getString("version"));
-                appInfos.add(appInfo);
+                while(rs.next()) {
+                    AppInfo appInfo = new AppInfo();
+                    appInfo.setId(rs.getInt("id"));
+                    appInfo.setVersion(rs.getString("version"));
+                    appInfos.add(appInfo);
+                }
+            } else {
+                LOG.warn("Direct JDBC Connection is null. Providing default AppInfo for startup.");
+                AppInfo defaultAppInfo = new AppInfo();
+                defaultAppInfo.setId(1);
+                defaultAppInfo.setVersion("1.0-SNAPSHOT");
+                appInfos.add(defaultAppInfo);
             }
 
         } catch (SQLException e) {

@@ -14,17 +14,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.Assert.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({AppInfoResourceMapper.class})
+@RunWith(MockitoJUnitRunner.class)
 public class AppInfoRestEndpointUTest {
 
     @Mock
@@ -35,23 +33,23 @@ public class AppInfoRestEndpointUTest {
 
     @Test
     public void testGetApplicationInformation() throws BusinessException {
-        PowerMockito.mockStatic(AppInfoResourceMapper.class);
+        try (MockedStatic<AppInfoResourceMapper> mocked = Mockito.mockStatic(AppInfoResourceMapper.class)) {
+            AppInfoResource appInfoResource = new AppInfoResource();
+            appInfoResource.setId(1);
+            appInfoResource.setVersion("1.0.0");
 
-        AppInfoResource appInfoResource = new AppInfoResource();
-        appInfoResource.setId(1);
-        appInfoResource.setVersion("1.0.0");
+            AppInfo appInfo = new AppInfo();
+            appInfo.setId(1);
+            appInfo.setVersion("1.0.0");
 
-        AppInfo appInfo = new AppInfo();
-        appInfo.setId(1);
-        appInfo.setVersion("1.0.0");
+            Mockito.when(applicationInfoService.getAppInfo()).thenReturn(appInfo);
+            mocked.when(() -> AppInfoResourceMapper.mapAppInfoToResource(appInfo)).thenReturn(appInfoResource);
 
-        Mockito.when(applicationInfoService.getAppInfo()).thenReturn(appInfo);
-        PowerMockito.when(AppInfoResourceMapper.mapAppInfoToResource(appInfo)).thenReturn(appInfoResource);
+            ResponseEntity<AppInfoResource> responseEntity = classUnderTest.getApplicationInformation();
 
-        ResponseEntity<AppInfoResource> responseEntity = classUnderTest.getApplicationInformation();
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(appInfoResource, responseEntity.getBody());
+            assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+            assertEquals(appInfoResource, responseEntity.getBody());
+        }
 
     }
 

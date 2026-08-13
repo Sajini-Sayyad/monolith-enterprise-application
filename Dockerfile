@@ -1,4 +1,4 @@
-FROM maven:3.9.9-eclipse-temurin-8 AS builder
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
@@ -6,7 +6,7 @@ COPY . .
 
 RUN mvn clean package -DskipTests -Dliquibase.skip=true
 
-FROM eclipse-temurin:8-jre
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
