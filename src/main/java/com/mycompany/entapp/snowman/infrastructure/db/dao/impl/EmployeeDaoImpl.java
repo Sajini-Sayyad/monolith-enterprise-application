@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 public class EmployeeDaoImpl extends AbstractHibernateDao implements EmployeeDao {
     @Override
     public Employee retrieveEmployee(int employeeId) {
-        return null;
+        return (Employee) getCurrentSession().get(Employee.class, employeeId);
     }
 
     @Override

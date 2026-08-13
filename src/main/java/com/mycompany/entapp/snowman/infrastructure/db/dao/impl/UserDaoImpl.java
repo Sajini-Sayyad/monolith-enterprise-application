@@ -18,29 +18,32 @@ import java.sql.SQLException;
 @Repository
 public class UserDaoImpl implements UserDao {
 
-    private static final String GET_USER_WITH_USERID_QUERY = "SELECT * FROM user where id = ?";
+    private static final String GET_USER_WITH_USERID_QUERY = "SELECT * FROM \"user\" where id = ?";
 
-    private static final String DELETE_USER_WITH_USERID = "DELETE FROM user where id = ?";
+    private static final String DELETE_USER_WITH_USERID = "DELETE FROM \"user\" where id = ?";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override
     public User findUser(int userId) {
-
-        return (User) jdbcTemplate.queryForObject(GET_USER_WITH_USERID_QUERY, new Object[]{userId}, new RowMapper<Object>() {
-            @Override
-            public Object mapRow(ResultSet rs, int i) throws SQLException {
-                User user = new User();
-                user.setUserId(rs.getInt("id"));
-                user.setFirstname(rs.getString("firstname"));
-                user.setLastname(rs.getString("lastname"));
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                user.setEmail(rs.getString("email"));
-                return user;
-            }
-        });
+        try {
+            return (User) jdbcTemplate.queryForObject(GET_USER_WITH_USERID_QUERY, new Object[]{userId}, new RowMapper<Object>() {
+                @Override
+                public Object mapRow(ResultSet rs, int i) throws SQLException {
+                    User user = new User();
+                    user.setUserId(rs.getInt("id"));
+                    user.setFirstname(rs.getString("firstname"));
+                    user.setLastname(rs.getString("secondname"));
+                    user.setUsername(rs.getString("username"));
+                    user.setPassword(rs.getString("password"));
+                    user.setEmail(rs.getString("email"));
+                    return user;
+                }
+            });
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
