@@ -20,7 +20,7 @@ public class HealthCheckRestEndpoint {
     @Autowired
     private HealthCheck healthCheck;
 
-    @RequestMapping(value = "/health", method = RequestMethod.GET)
+    @RequestMapping(value = "/health-check", method = RequestMethod.GET)
     public ResponseEntity checkStatus() {
         HealthStatus healthStatus = healthCheck.getHealthStatus();
 

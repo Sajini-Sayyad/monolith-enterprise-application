@@ -23,6 +23,9 @@ public class ReportingSnapshotTask {
     private ReportingService reportingService;
 
     public void executeTask() {
-        LOGGER.info(reportingService.retrieveReportingData().toString());
+        ReportingData reportingData = reportingService.retrieveReportingData();
+        if (reportingData != null) {
+            LOGGER.info(reportingData.toString());
+        }
     }
 }

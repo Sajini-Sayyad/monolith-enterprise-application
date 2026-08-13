@@ -3,7 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!--<bean id="reportingSnapshotTask" class="com.mycompany.entapp.snowman.application.schedule.ReportingSnapshotTask"/>-->
+    <bean id="reportingSnapshotTask" class="com.mycompany.entapp.snowman.application.schedule.ReportingSnapshotTask"/>
 
     <bean name="reportingSnapshotJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="jobClass" value="com.mycompany.entapp.snowman.infrastructure.scheduling.ReportingSnapshotJob"/>
