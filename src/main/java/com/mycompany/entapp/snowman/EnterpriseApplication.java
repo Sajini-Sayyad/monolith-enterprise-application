@@ -25,6 +25,7 @@ public class EnterpriseApplication {
 
         final ServerConnector serverConnector = new ServerConnector(server);
 
+        serverConnector.setHost("0.0.0.0");
         serverConnector.setPort(resolvePort());
 
         server.setConnectors(new Connector[]{serverConnector});
