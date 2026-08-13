@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 @RestController
 @RequestMapping("/user")
 public class UserRestEndpoint {
@@ -36,14 +38,14 @@ public class UserRestEndpoint {
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResponseEntity createNewUser(@Valid UserResource userResource) {
+    public ResponseEntity createNewUser(@Valid @RequestBody UserResource userResource) {
         User user = UserResourceMapper.mapUserResourceToUser(userResource);
         userService.createUser(user);
         return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public ResponseEntity updateExistingUser(@Valid UserResource userResource){
+    public ResponseEntity updateExistingUser(@Valid @RequestBody UserResource userResource){
         User user = UserResourceMapper.mapUserResourceToUser(userResource);
         userService.updateUser(user);
         return ResponseEntity.ok().build();

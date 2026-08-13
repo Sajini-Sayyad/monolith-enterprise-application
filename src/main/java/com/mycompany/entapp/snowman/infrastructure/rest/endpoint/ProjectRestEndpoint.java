@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 @RestController
 @RequestMapping("/project")
 public class ProjectRestEndpoint {
@@ -39,7 +41,7 @@ public class ProjectRestEndpoint {
     }
 
     @RequestMapping("/create")
-    public ResponseEntity<?> createProject(@Valid ProjectResource projectResource) {
+    public ResponseEntity<?> createProject(@Valid @RequestBody ProjectResource projectResource) {
         Project project = ProjectResourceMapper.mapToProject(projectResource);
         projectService.createProject(project);
         return ResponseEntity.ok().build();
@@ -50,8 +52,8 @@ public class ProjectRestEndpoint {
         projectService.deleteProject(projectId);
     }
 
-    @RequestMapping("/update}")
-    public ResponseEntity<?> updateProject(ProjectResource projectResource) {
+    @RequestMapping("/update")
+    public ResponseEntity<?> updateProject(@Valid @RequestBody ProjectResource projectResource) {
         Project project = ProjectResourceMapper.mapToProject(projectResource);
         projectService.updateProject(project);
         return ResponseEntity.ok().build();
