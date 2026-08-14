@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monolith-application
+  namespace: monolith
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monolith-application
+  template:
+    metadata:
+      labels:
+        app: monolith-application
+    spec:
+      containers:
+        - name: monolith-application
+          image: snowmanacr.azurecr.io/monolith-application:IMAGE_TAG
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8090
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
