@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,20 +35,9 @@ public class Employee {
     @Column(length = 20, nullable = false)
     private String surname;
 
-    @OneToOne
-    @JoinColumn(name = "employee_role_id", nullable = true) // should change this to false
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "employee_role_id", nullable = true)
     private EmployeeRole role;
-
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(name = "employee_project",
-//        joinColumns = {
-//            @JoinColumn(name = "employee_id", nullable = true, updatable = false)
-//        },
-//        inverseJoinColumns = {
-//            @JoinColumn(name = "project_id", nullable = true, updatable = false)
-//        }
-//    )
-//    private Set<Project> projects = new HashSet<>(0);
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "employee")
     private Set<EmployeeProject> projects = new HashSet<>(0);
@@ -83,14 +73,6 @@ public class Employee {
     public void setRole(EmployeeRole role) {
         this.role = role;
     }
-
-//    public Set<Project> getProjects() {
-//        return projects;
-//    }
-//
-//    public void setProjects(Set<Project> projects) {
-//        this.projects = projects;
-//    }
 
     public Set<EmployeeProject> getProjects() {
         return projects;

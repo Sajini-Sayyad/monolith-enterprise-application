@@ -12,6 +12,7 @@ import com.mycompany.entapp.snowman.infrastructure.rest.resources.UserResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,26 +29,29 @@ public class UserRestEndpoint {
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
     public ResponseEntity<UserResource> getUser(@PathVariable("userId") String userId) {
         User user = userService.findUser(userId);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
         UserResource userResource = UserResourceMapper.mapUserToUserResource(user);
         return ResponseEntity.ok(userResource);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResponseEntity createNewUser(@Valid UserResource userResource) {
+    public ResponseEntity createNewUser(@Valid @RequestBody UserResource userResource) {
         User user = UserResourceMapper.mapUserResourceToUser(userResource);
         userService.createUser(user);
         return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public ResponseEntity updateExistingUser(@Valid UserResource userResource){
+    public ResponseEntity updateExistingUser(@Valid @RequestBody UserResource userResource) {
         User user = UserResourceMapper.mapUserResourceToUser(userResource);
         userService.updateUser(user);
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "{userId}/delete", method = RequestMethod.DELETE)
-    public ResponseEntity deleteUser(@PathVariable Integer userId) {
+    @RequestMapping(value = "/{userId}/delete", method = RequestMethod.DELETE)
+    public ResponseEntity deleteUser(@PathVariable("userId") int userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok().build();
     }

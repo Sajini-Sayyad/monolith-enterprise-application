@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -25,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
+@Transactional
 public class ClientServiceImpl implements ClientService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClientServiceImpl.class);
@@ -44,23 +47,39 @@ public class ClientServiceImpl implements ClientService {
 
         LOG.info("Retrieved client: {}", client);
 
-        if (client.getProjects().isEmpty()) {
-            // call Client System REST endpoint to get its project data.
+        if (client == null) {
+            return null;
+        }
 
-            ResponseEntity<String> response = makeRequest();
-
-            // retry
+        if (client.getProjects() != null && client.getProjects().isEmpty()) {
+            // call Client System REST endpoint to get its project data with bounded retry and backoff
+            ResponseEntity<String> response = null;
             int retryCount = 0;
-            while(response.getStatusCode() != HttpStatus.OK) {
-                if (retryCount > MAX_RETRIES) {
-                    break;
+
+            while (retryCount <= MAX_RETRIES) {
+                try {
+                    response = makeRequest(clientId);
+                    if (response != null && response.getStatusCode() == HttpStatus.OK) {
+                        break;
+                    }
+                } catch (RestClientException e) {
+                    LOG.warn("Attempt {} to fetch project data failed: {}", retryCount + 1, e.getMessage());
                 }
 
-                response = makeRequest();
                 retryCount++;
+                if (retryCount <= MAX_RETRIES) {
+                    try {
+                        Thread.sleep(200L * retryCount); // Backoff before retry
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
             }
 
-            processResponse(response.getBody(), client);
+            if (response != null && response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                processResponse(response.getBody(), client);
+            }
         }
 
         return client;
@@ -74,20 +93,19 @@ public class ClientServiceImpl implements ClientService {
             Set<Project> projects = new HashSet<>();
             projects.add(new Project());
         } catch (IOException e) {
-           LOG.error("{}", e);
+            LOG.error("Failed to parse client projects JSON response: {}", e.getMessage());
         }
     }
 
-    private ResponseEntity<String> makeRequest() {
-        return restTemplate.getForEntity(URI, String.class);
+    private ResponseEntity<String> makeRequest(int clientId) {
+        return restTemplate.getForEntity(URI, String.class, clientId);
     }
 
     @Override
     public void createClient(Client client) throws SnowmanException {
-
         LOG.info("Creating client {}", client);
 
-        if (getClient(client.getId()) != null) {
+        if (client != null && getClient(client.getId()) != null) {
             throw new SnowmanException("Client already exists");
         }
 
@@ -96,11 +114,10 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void updateClient(Client client) throws SnowmanException {
-
         LOG.info("Updating client {}", client);
 
-        if (getClient(client.getId()) == null) {
-            throw new SnowmanException("Client doesn't exists");
+        if (client == null || getClient(client.getId()) == null) {
+            throw new SnowmanException("Client doesn't exist");
         }
 
         clientRepository.updateClient(client);
@@ -108,12 +125,11 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void deleteClient(int clientId) throws SnowmanException {
-
         LOG.info("Deleting client with id {}", clientId);
 
         if (getClient(clientId) == null) {
             LOG.error("Trying to delete a client with id {} that doesn't exist", clientId);
-            throw new SnowmanException("Client doesn't exists");
+            throw new SnowmanException("Client doesn't exist");
         }
 
         clientRepository.deleteClient(clientId);

@@ -14,18 +14,28 @@ public final class ClientResourceMapper {
     }
 
     public static Client mapToClient(ClientResource clientResource) {
+        if (clientResource == null) {
+            return null;
+        }
         Client client = new Client();
         client.setId(clientResource.getClientId());
         client.setClientName(clientResource.getClientName());
-        client.setProjects(ProjectResourceMapper.mapToProjects(clientResource.getProjects()));
+        if (clientResource.getProjects() != null) {
+            client.setProjects(ProjectResourceMapper.mapToProjects(clientResource.getProjects()));
+        }
         return client;
     }
 
     public static ClientResource mapToClientResource(Client client) {
+        if (client == null) {
+            return null;
+        }
         ClientResource clientResource = new ClientResource();
         clientResource.setClientId(client.getId());
         clientResource.setClientName(client.getClientName());
-        clientResource.setProjects(ProjectResourceMapper.mapToProjectResources(client.getProjects()));
+        if (client.getProjects() != null) {
+            clientResource.setProjects(ProjectResourceMapper.mapToProjectResources(client.getProjects()));
+        }
         return clientResource;
     }
 }

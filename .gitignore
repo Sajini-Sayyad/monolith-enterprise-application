@@ -35,3 +35,4 @@ target/*
 ehthumbs.db
 Thumbs.db
 /target/
+dependency-reduced-pom.xml

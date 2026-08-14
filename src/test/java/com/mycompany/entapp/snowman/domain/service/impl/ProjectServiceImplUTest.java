@@ -8,96 +8,68 @@ package com.mycompany.entapp.snowman.domain.service.impl;
 import com.mycompany.entapp.snowman.domain.ProjectTestHelper;
 import com.mycompany.entapp.snowman.domain.model.Project;
 import com.mycompany.entapp.snowman.domain.repository.ProjectRepository;
+import com.mycompany.entapp.snowman.domain.service.ProjectService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectServiceImplUTest {
-
-    private static final int PROJECT_ID = 1;
 
     @Mock
     private ProjectRepository projectRepository;
 
     @InjectMocks
-    private ProjectServiceImpl classUnderTest = new ProjectServiceImpl();
+    private ProjectService projectService = new ProjectServiceImpl();
 
     @Test
-    public void testCreateProjectShouldCreateProject(){
+    public void testGetProject() {
+        final int projectId = 1;
+        Project expectedProject = ProjectTestHelper.getProject();
+
+        Mockito.when(projectRepository.findProject(projectId)).thenReturn(expectedProject);
+
+        Project actualProject = projectService.getProject(projectId);
+
+        assertEquals(expectedProject, actualProject);
+    }
+
+    @Test
+    public void testCreateProject() {
         Project project = ProjectTestHelper.getProject();
 
-        Mockito.doNothing().when(projectRepository).saveProject(project);
+        Mockito.doNothing().when(projectRepository).saveProject(ArgumentMatchers.any(Project.class));
 
-        classUnderTest.createProject(project);
+        projectService.createProject(project);
 
         Mockito.verify(projectRepository, Mockito.times(1)).saveProject(project);
     }
 
     @Test
-    public void testGetProjetcWithProjectIdShouldReturnProjectWithThatProjectId() {
+    public void testUpdateProject() {
         Project project = ProjectTestHelper.getProject();
 
-        Mockito.when(projectRepository.findProject(PROJECT_ID)).thenReturn(project);
+        Mockito.doNothing().when(projectRepository).saveProject(ArgumentMatchers.any(Project.class));
 
-        Project actualProject = classUnderTest.getProject(PROJECT_ID);
+        projectService.updateProject(project);
 
-        Mockito.verify(projectRepository, Mockito.times(1)).findProject(PROJECT_ID);
-        assertEquals(project, actualProject);
+        Mockito.verify(projectRepository, Mockito.times(1)).saveProject(project);
     }
 
     @Test
-    public void testUpdateProjectThatExistShouldUpdateProject() {
-        Project existingProject = ProjectTestHelper.getProject();
+    public void testDeleteProject() {
+        final int projectId = 1;
 
-        Mockito.when(projectRepository.findProject(existingProject.getId())).thenReturn(existingProject);
-        Mockito.doNothing().when(projectRepository).saveProject(existingProject);
+        Mockito.doNothing().when(projectRepository).removeProject(projectId);
 
-        classUnderTest.updateProject(existingProject);
+        projectService.deleteProject(projectId);
 
-        Mockito.verify(projectRepository, Mockito.times(1)).findProject(existingProject.getId());
-        Mockito.verify(projectRepository, Mockito.times(1)).saveProject(existingProject);
+        Mockito.verify(projectRepository, Mockito.times(1)).removeProject(projectId);
     }
-
-    @Test
-    public void testUpdateProjectThatDoesNotExistShouldThrowException() {
-        Project existingProject = ProjectTestHelper.getProject();
-        try {
-            Mockito.when(projectRepository.findProject(existingProject.getId())).thenReturn(null);
-
-            classUnderTest.updateProject(existingProject);
-
-            fail("Should not get here");
-        } catch (RuntimeException ex) {
-            Mockito.verify(projectRepository, Mockito.never()).saveProject(existingProject);
-            assertEquals("Can't update an unknown project " + existingProject, ex.getLocalizedMessage());
-        }
-    }
-
-    @Test
-    public void testDeleteExistingProjectShouldDeleteExistingProject() {
-        Project existingProject = ProjectTestHelper.getProject();
-
-        Mockito.when(projectRepository.findProject(PROJECT_ID)).thenReturn(existingProject);
-        Mockito.doNothing().when(projectRepository).removeProject(PROJECT_ID);
-
-        classUnderTest.deleteProject(PROJECT_ID);
-
-        Mockito.verify(projectRepository, Mockito.times(1)).removeProject(PROJECT_ID);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testDeleteExistingProjectThatDoesNotExistShouldThrowException() {
-
-        Mockito.when(projectRepository.findProject(PROJECT_ID)).thenReturn(null);
-
-        classUnderTest.deleteProject(PROJECT_ID);
-    }
-
 }

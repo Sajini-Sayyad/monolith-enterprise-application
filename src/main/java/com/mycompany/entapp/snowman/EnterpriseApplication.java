@@ -15,6 +15,7 @@ import java.net.URL;
 public class EnterpriseApplication {
 
     private static final int DEFAULT_PORT = 8090;
+    private static final String DEFAULT_HOST = "0.0.0.0";
 
     private EnterpriseApplication() {
     }
@@ -25,6 +26,7 @@ public class EnterpriseApplication {
 
         final ServerConnector serverConnector = new ServerConnector(server);
 
+        serverConnector.setHost(resolveHost());
         serverConnector.setPort(resolvePort());
 
         server.setConnectors(new Connector[]{serverConnector});
@@ -63,6 +65,10 @@ public class EnterpriseApplication {
             throw new RuntimeException("Unable to fetch specified resource: " + resourceName);
         }
         return resourceURL.toString();
+    }
+
+    private static String resolveHost() {
+        return System.getProperty("host", DEFAULT_HOST);
     }
 
     private static int resolvePort() {

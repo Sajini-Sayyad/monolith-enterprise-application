@@ -5,13 +5,15 @@
  */
 package com.mycompany.entapp.snowman.domain.service.impl;
 
-import com.mycompany.entapp.snowman.infrastructure.db.dao.UserDao;
 import com.mycompany.entapp.snowman.domain.model.User;
 import com.mycompany.entapp.snowman.domain.service.UserService;
+import com.mycompany.entapp.snowman.infrastructure.db.dao.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -19,16 +21,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUser(String userId) {
-        return userDao.findUser(Integer.parseInt(userId));
+        try {
+            return userDao.findUser(Integer.parseInt(userId));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     @Override
-    public void createUser(User user){
+    public void createUser(User user) {
         userDao.saveUser(user);
     }
 
     @Override
-    public void updateUser(User user){
+    public void updateUser(User user) {
         userDao.saveUser(user);
     }
 
@@ -36,5 +42,4 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(int userId) {
         userDao.removeUser(userId);
     }
-
 }

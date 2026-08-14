@@ -10,10 +10,13 @@ import com.mycompany.entapp.snowman.domain.model.Project;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class ProjectResourceMapperUTest {
 
@@ -59,7 +62,29 @@ public class ProjectResourceMapperUTest {
 
     @Test
     public void testMapToProjects() throws Exception {
-        fail("To be Implemented");
+        List<ProjectResource> projectResources = new ArrayList<>();
+        ProjectResource projectResource = new ProjectResource();
+        projectResource.setProjectId(1);
+        projectResource.setTitle("Project Title");
+        projectResources.add(projectResource);
+
+        Set<Project> projects = ProjectResourceMapper.mapToProjects(projectResources);
+
+        assertEquals(1, projects.size());
+        assertEquals(1, projects.iterator().next().getId());
     }
 
+    @Test
+    public void testMapToProjectResources() throws Exception {
+        Set<Project> projects = new HashSet<>();
+        Project project = new Project();
+        project.setId(1);
+        project.setProjectTitle("Project Title");
+        projects.add(project);
+
+        List<ProjectResource> projectResources = ProjectResourceMapper.mapToProjectResources(projects);
+
+        assertEquals(1, projectResources.size());
+        assertEquals(1, projectResources.get(0).getProjectId());
+    }
 }

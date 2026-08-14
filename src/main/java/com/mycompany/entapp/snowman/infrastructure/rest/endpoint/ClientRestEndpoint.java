@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/client")
 public class ClientRestEndpoint {
@@ -28,36 +30,42 @@ public class ClientRestEndpoint {
     @RequestMapping(value = "/{clientId}", method = RequestMethod.GET)
     public ResponseEntity<ClientResource> getClientInfo(@PathVariable("clientId") Integer clientId) {
         Client client = clientService.getClient(clientId);
+        if (client == null) {
+            return ResponseEntity.notFound().build();
+        }
         ClientResource clientResource = ClientResourceMapper.mapToClientResource(client);
         return ResponseEntity.ok(clientResource);
     }
 
     @RequestMapping(value = "/new", method = RequestMethod.POST)
-    public void createClientInfo(@RequestBody ClientResource clientResource) {
+    public ResponseEntity createClientInfo(@Valid @RequestBody ClientResource clientResource) {
         Client client = ClientResourceMapper.mapToClient(clientResource);
         try {
             clientService.createClient(client);
+            return ResponseEntity.ok().build();
         } catch (SnowmanException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public void updateClientInfo(@RequestBody ClientResource clientResource) {
+    public ResponseEntity updateClientInfo(@Valid @RequestBody ClientResource clientResource) {
         Client client = ClientResourceMapper.mapToClient(clientResource);
         try {
             clientService.updateClient(client);
+            return ResponseEntity.ok().build();
         } catch (SnowmanException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @RequestMapping(value = "/{clientId}", method = RequestMethod.DELETE)
-    public void deleteClientInfo(@PathVariable("clientId") Integer clientId) {
+    public ResponseEntity deleteClientInfo(@PathVariable("clientId") Integer clientId) {
         try {
             clientService.deleteClient(clientId);
+            return ResponseEntity.ok().build();
         } catch (SnowmanException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

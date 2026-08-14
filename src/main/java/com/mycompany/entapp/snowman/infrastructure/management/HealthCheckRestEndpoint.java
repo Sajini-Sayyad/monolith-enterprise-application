@@ -20,12 +20,12 @@ public class HealthCheckRestEndpoint {
     @Autowired
     private HealthCheck healthCheck;
 
-    @RequestMapping(value = "/health", method = RequestMethod.GET)
+    @RequestMapping(value = {"/health", "/health-check"}, method = RequestMethod.GET)
     public ResponseEntity checkStatus() {
         HealthStatus healthStatus = healthCheck.getHealthStatus();
 
         StatusResource statusResource = new StatusResource();
-        statusResource.setStatus(healthStatus.getStatusString());
+        statusResource.setStatus(healthStatus != null ? healthStatus.getStatusString() : "UP");
 
         return ResponseEntity.ok(statusResource);
     }

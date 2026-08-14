@@ -30,6 +30,15 @@ public class Client {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
     private Set<Project> projects;
 
+    public Client() {
+    }
+
+    public Client(int id, String clientName, Set<Project> projects) {
+        this.id = id;
+        this.clientName = clientName;
+        this.projects = projects;
+    }
+
     public int getId() {
         return id;
     }

@@ -42,11 +42,19 @@ public class Project {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    //@ManyToMany(fetch = FetchType.LAZY, mappedBy = "projects")
-    //private Set<Employee> employees = new HashSet<>(0);
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "project")
     private Set<EmployeeProject> employeeProjects = new HashSet<>(0);
+
+    public Project() {
+    }
+
+    public Project(int id, String projectTitle, Date dateStarted, Date dateEnded, Client client) {
+        this.id = id;
+        this.projectTitle = projectTitle;
+        this.dateStarted = dateStarted;
+        this.dateEnded = dateEnded;
+        this.client = client;
+    }
 
     public int getId() {
         return id;
@@ -87,14 +95,6 @@ public class Project {
     public void setClient(Client client) {
         this.client = client;
     }
-
-//    public Set<Employee> getEmployees() {
-//        return employees;
-//    }
-//
-//    public void setEmployees(Set<Employee> employees) {
-//        this.employees = employees;
-//    }
 
     public Set<EmployeeProject> getEmployeeProjects() {
         return employeeProjects;

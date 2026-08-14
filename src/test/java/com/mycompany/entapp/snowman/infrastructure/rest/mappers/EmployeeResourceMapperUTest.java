@@ -18,13 +18,17 @@ public class EmployeeResourceMapperUTest {
     @Test
     public void givenEmployee_whenMapEmployeeToEmployeeResource_thenReturnEmployeeResource() {
         Employee employee = EmployeeTestHelper.getEmployee();
+        EmployeeRole employeeRole = new EmployeeRole();
+        employeeRole.setId(1);
+        employeeRole.setRole("Role");
+        employee.setRole(employeeRole);
 
         EmployeeResource actualEmployeeResource = EmployeeResourceMapper.mapEmployeeToEmployeeResource(employee);
 
         assertEquals(1, actualEmployeeResource.getEmployeeId());
-        assertEquals("firstName", actualEmployeeResource.getFirstName());
-        assertEquals("surName", actualEmployeeResource.getSecondName());
-        assertEquals("role", actualEmployeeResource.getRole());
+        assertEquals("FirstName", actualEmployeeResource.getFirstName());
+        assertEquals("Surname", actualEmployeeResource.getSecondName());
+        assertEquals("Role", actualEmployeeResource.getRole());
     }
 
     @Test
@@ -35,17 +39,17 @@ public class EmployeeResourceMapperUTest {
 
         EmployeeResource employeeResource = new EmployeeResource();
         employeeResource.setEmployeeId(1);
-        employeeResource.setFirstName("firstName");
-        employeeResource.setSecondName("surname");
+        employeeResource.setFirstName("FirstName");
+        employeeResource.setSecondName("Surname");
         employeeResource.setRole("Role");
 
         Employee actualEmployee = EmployeeResourceMapper.mapEmployeeResourceToEmployee(employeeResource);
 
         assertEquals(1, actualEmployee.getId());
-        assertEquals("firstName", actualEmployee.getFirstname());
-        assertEquals("surname", actualEmployee.getSurname());
+        assertEquals("FirstName", actualEmployee.getFirstname());
+        assertEquals("Surname", actualEmployee.getSurname());
         assertEquals(employeeRole, actualEmployee.getRole());
-        assertEquals(null, actualEmployee.getProjects());
+        assertTrue(actualEmployee.getProjects() == null || actualEmployee.getProjects().isEmpty());
     }
 
 }

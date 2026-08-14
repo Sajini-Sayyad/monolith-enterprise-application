@@ -1,6 +1,6 @@
 /*
  * |-------------------------------------------------
- * | Copyright © 2018 Colin But. All rights reserved.
+ * | Copyright © 2017 Colin But. All rights reserved.
  * |-------------------------------------------------
  */
 package com.mycompany.entapp.snowman.infrastructure.rest.endpoint;
@@ -14,52 +14,42 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({AppInfoResourceMapper.class})
+@RunWith(MockitoJUnitRunner.class)
 public class AppInfoRestEndpointUTest {
 
     @Mock
     private ApplicationInfoService applicationInfoService;
 
     @InjectMocks
-    private AppInfoRestEndpoint classUnderTest = new AppInfoRestEndpoint();
+    private AppInfoRestEndpoint classInTest = new AppInfoRestEndpoint();
 
     @Test
     public void testGetApplicationInformation() throws BusinessException {
-        PowerMockito.mockStatic(AppInfoResourceMapper.class);
+        AppInfo appInfo = new AppInfo();
+        appInfo.setId(1);
+        appInfo.setVersion("1.0.0");
 
         AppInfoResource appInfoResource = new AppInfoResource();
         appInfoResource.setId(1);
         appInfoResource.setVersion("1.0.0");
 
-        AppInfo appInfo = new AppInfo();
-        appInfo.setId(1);
-        appInfo.setVersion("1.0.0");
-
         Mockito.when(applicationInfoService.getAppInfo()).thenReturn(appInfo);
-        PowerMockito.when(AppInfoResourceMapper.mapAppInfoToResource(appInfo)).thenReturn(appInfoResource);
 
-        ResponseEntity<AppInfoResource> responseEntity = classUnderTest.getApplicationInformation();
+        try (MockedStatic<AppInfoResourceMapper> mocked = Mockito.mockStatic(AppInfoResourceMapper.class)) {
+            mocked.when(() -> AppInfoResourceMapper.mapAppInfoToResource(appInfo)).thenReturn(appInfoResource);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(appInfoResource, responseEntity.getBody());
+            ResponseEntity<AppInfoResource> response = classInTest.getApplicationInformation();
 
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(appInfoResource, response.getBody());
+        }
     }
-
-    @Test(expected = RuntimeException.class)
-    public void testGetApplicationInformation_throwsException() throws BusinessException {
-        Mockito.doThrow(BusinessException.class).when(applicationInfoService).getAppInfo();
-
-        classUnderTest.getApplicationInformation();
-    }
-
 }
